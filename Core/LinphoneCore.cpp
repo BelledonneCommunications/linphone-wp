@@ -697,6 +697,12 @@ Platform::Boolean Linphone::Core::LinphoneCore::KeepAliveEnabled::get()
 	return (linphone_core_keep_alive_enabled(this->lc) == TRUE);
 }
 
+Platform::String^ Linphone::Core::LinphoneCore::PlayFile::get()
+{
+	API_LOCK;
+	throw ref new NotImplementedException();
+}
+
 void Linphone::Core::LinphoneCore::PlayFile::set(Platform::String^ path)
 {
 	API_LOCK;
@@ -1235,6 +1241,12 @@ Linphone::Core::LinphoneChatRoom^ Linphone::Core::LinphoneCore::GetChatRoomFromU
 	return lChatRoom;
 }
 
+Platform::String^ Linphone::Core::LinphoneCore::LogCollectionUploadServerUrl::get()
+{
+	API_LOCK;
+	throw ref new NotImplementedException();
+}
+
 void Linphone::Core::LinphoneCore::LogCollectionUploadServerUrl::set(Platform::String^ url)
 {
 	API_LOCK;
@@ -1266,6 +1278,12 @@ void Linphone::Core::LinphoneCore::NotifyMute(bool isMuted)
 	API_LOCK;
 	Globals::Instance->CallController->NotifyMute(isMuted);
 	MicMuted = isMuted;
+}
+
+Platform::String^ Linphone::Core::LinphoneCore::ChatDatabasePath::get()
+{
+	API_LOCK;
+	throw ref new NotImplementedException();
 }
 
 void Linphone::Core::LinphoneCore::ChatDatabasePath::set(Platform::String^ chatDatabasePath)

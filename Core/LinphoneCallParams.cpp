@@ -19,6 +19,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PayloadType.h"
 #include "Server.h"
 
+using namespace Platform;
+
+int Linphone::Core::LinphoneCallParams::AudioBandwidthLimit::get()
+{
+	API_LOCK;
+	throw ref new NotImplementedException();
+}
+
 void Linphone::Core::LinphoneCallParams::AudioBandwidthLimit::set(int value)
 {
 	API_LOCK;
