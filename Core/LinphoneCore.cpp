@@ -729,6 +729,21 @@ Platform::Boolean Linphone::Core::LinphoneCore::PauseAllCalls()
 	return (linphone_core_pause_all_calls(this->lc) == 0);
 }
 
+Linphone::Core::LinphoneCall^ Linphone::Core::LinphoneCore::FirstCall::get() 
+{
+	API_LOCK;
+	Linphone::Core::LinphoneCall^ lCall = nullptr;
+	const MSList *list = linphone_core_get_calls(this->lc);
+	if (!list || ms_list_size(list) == 0) return lCall;
+
+	::LinphoneCall *call = (::LinphoneCall *)list->data;
+	if (call != nullptr) {
+		Linphone::Core::RefToPtrProxy<Linphone::Core::LinphoneCall^> *proxy = reinterpret_cast< Linphone::Core::RefToPtrProxy<Linphone::Core::LinphoneCall^> *>(linphone_call_get_user_pointer(call));
+		lCall = (proxy) ? proxy->Ref() : nullptr;
+	}
+	return lCall;
+}
+
 Platform::Boolean Linphone::Core::LinphoneCore::InConference::get()
 {
 	API_LOCK;

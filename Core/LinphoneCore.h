@@ -213,6 +213,14 @@ namespace Linphone
 			}
 
 			/// <summary>
+			/// Gets the first call.
+			/// </summary>
+			property LinphoneCall^ FirstCall
+			{
+				LinphoneCall^ get();
+			}
+
+			/// <summary>
 			/// Tells whether there is at least one call running.
 			/// </summary>
 			property Platform::Boolean InCall

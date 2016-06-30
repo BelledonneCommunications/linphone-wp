@@ -28,6 +28,22 @@ using namespace Windows::Phone::Networking::Voip;
 
 //#define ACCEPT_WITH_VIDEO_OR_WITH_AUDIO_ONLY
 
+void CallController::OnHoldCallRequested(VoipPhoneCall^ call, CallStateChangeEventArgs^ args)
+{
+	Globals::Instance->LinphoneCore->PauseAllCalls();
+}
+
+void CallController::OnResumeCallRequested(VoipPhoneCall^ call, CallStateChangeEventArgs^ args)
+{
+	LinphoneCall^ lCall = Globals::Instance->LinphoneCore->FirstCall;
+	Globals::Instance->LinphoneCore->ResumeCall(lCall);
+}
+
+void CallController::OnEndCallRequested(VoipPhoneCall^ call, CallStateChangeEventArgs^ args)
+{
+	Globals::Instance->LinphoneCore->TerminateAllCalls();
+}
+
 VoipPhoneCall^ CallController::OnIncomingCallReceived(Linphone::Core::LinphoneCall^ call, Platform::String^ contactName, Platform::String^ contactNumber, IncomingCallViewDismissedCallback^ incomingCallViewDismissedCallback)
 {
 	VoipPhoneCall^ incomingCall = nullptr;
@@ -94,6 +110,9 @@ void CallController::OnAcceptCallRequested(VoipPhoneCall^ incomingCall, CallAnsw
 	}
 
 	if (this->call != nullptr) {
+		incomingCall->HoldRequested += this->holdCallRequestedHandler;
+		incomingCall->ResumeRequested += this->resumeCallRequestedHandler;
+		incomingCall->EndRequested += this->endCallRequestedHandler;
 #ifdef ACCEPT_WITH_VIDEO_OR_WITH_AUDIO_ONLY
 		LinphoneCallParams^ params = call->GetCurrentParamsCopy();
 		if ((args->AcceptedMedia & VoipCallMedia::Video) == VoipCallMedia::Video) {
@@ -139,7 +158,10 @@ VoipPhoneCall^ CallController::NewOutgoingCall(Platform::String^ number)
         this->voipServiceName,
         media,
 		&outgoingCall);
-
+	
+	outgoingCall->HoldRequested += this->holdCallRequestedHandler;
+	outgoingCall->ResumeRequested += this->resumeCallRequestedHandler;
+	outgoingCall->EndRequested += this->endCallRequestedHandler;
 	outgoingCall->NotifyCallActive();
 	return outgoingCall;
 }
@@ -218,6 +240,9 @@ CallController::CallController() :
 
 	this->acceptCallRequestedHandler = ref new TypedEventHandler<VoipPhoneCall^, CallAnswerEventArgs^>(this, &CallController::OnAcceptCallRequested);
     this->rejectCallRequestedHandler = ref new TypedEventHandler<VoipPhoneCall^, CallRejectEventArgs^>(this, &CallController::OnRejectCallRequested);
+    this->holdCallRequestedHandler = ref new TypedEventHandler<VoipPhoneCall^, CallStateChangeEventArgs^>(this, &CallController::OnHoldCallRequested);
+    this->resumeCallRequestedHandler = ref new TypedEventHandler<VoipPhoneCall^, CallStateChangeEventArgs^>(this, &CallController::OnResumeCallRequested);
+    this->endCallRequestedHandler = ref new TypedEventHandler<VoipPhoneCall^, CallStateChangeEventArgs^>(this, &CallController::OnEndCallRequested);
 }
 
 CallController::~CallController()
